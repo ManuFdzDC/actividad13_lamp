@@ -10,6 +10,7 @@ fi
 
 # Instalación de Apache y PHP
 sudo apt update
+sudo apt upgrade -y
 sudo apt install -y apache2
 sudo apache2 -v
 
