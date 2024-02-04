@@ -28,8 +28,7 @@ echo "<VirtualHost *:80>
 	ErrorLog \${APACHE_LOG_DIR}/error.log
 	CustomLog \${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>" | sudo tee /etc/apache2/sites-available/000-default.conf > /dev/null
-# Asegúrate de que el archivo esté configurado correctamente según tus necesidades
-# Guarda los cambios y cierra el editor
+
 
 # Reiniciar Apache
 sudo systemctl restart apache2
