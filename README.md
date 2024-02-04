@@ -74,3 +74,9 @@
 5. Acceder a PhPMyAdmin escribiendo la ip publica de nuestra maquina seguido de phpmyadmin. Por ejemplo: 54.89.229.25/phpmyadmin/
    ![](img/cap14.png)
 
+### Resultado final
+- http://servidor_AWS/
+![](img/cap15.png)
+- http://servidor_AWS/info.php
+![](img/cap16.png)
+ Nota: Estas dos ultimas capturas de pantalla estan tomadas de una maquina virtual Ubuntu ya que en la maquina de AWS esta instalado ya el Wordpress.
