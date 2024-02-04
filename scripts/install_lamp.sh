@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Verificar si existe el archivo .env y si no existe crearlo
+if [ ! -f .env ]; then
+    echo "El archivo .env no existe. Creando el archivo..."
+    echo "# Configuración de variables para LAMP y PHPMyAdmin" > .env
+    echo "MARIADB_ROOT_PASSWORD=alumno203" >> .env
+    echo "PHPMYADMIN_PASSWORD=alumno203" >> .env
+    chmod 600 .env
+fi
+
+# Cargar variables de entorno desde el archivo .env
+export $(grep -v '^#' .env | xargs)
+
+# Instalación de Apache y PHP
+sudo apt update
+sudo apt install -y apache2
+sudo apache2 -v
+
+sudo apt install -y php libapache2-mod-php php-mysql
+
+# Edición del sitio por defecto de Apache
+echo "<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/html
+	DirectoryIndex index.html index.php
+
+	ErrorLog \${APACHE_LOG_DIR}/error.log
+	CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>" | sudo tee /etc/apache2/sites-available/000-default.conf > /dev/null
+# Asegúrate de que el archivo esté configurado correctamente según tus necesidades
+# Guarda los cambios y cierra el editor
+
+# Reiniciar Apache
+sudo systemctl restart apache2
+
+# Instalación y configuración de MariaDB
+sudo debconf-set-selections <<< "mariadb-server mariadb-server/root_password password $MARIADB_ROOT_PASSWORD"
+sudo debconf-set-selections <<< "mariadb-server mariadb-server/root_password_again password $MARIADB_ROOT_PASSWORD"
+sudo apt install -y mariadb-server mariadb-client
+
+# Cambiar la contraseña del usuario root de MariaDB
+sudo mariadb -u root <<EOF
+SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$MARIADB_ROOT_PASSWORD');
+FLUSH PRIVILEGES;
+QUIT
+EOF
+
+
+# Instalación de PHPMyAdmin
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/dbconfig-install boolean true"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/app-password-confirm password $PHPMYADMIN_PASSWORD"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/mysql/admin-pass password $MARIADB_ROOT_PASSWORD"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/mysql/app-pass password $PHPMYADMIN_PASSWORD"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2"
+sudo apt install -y phpmyadmin php-mbstring php-zip php-gd php-json php-curl
+
+
+
+# Reiniciar Apache después de la instalación de PHPMyAdmin
+sudo systemctl restart apache2
+
+# Mensaje final
+echo "LAMP y PHPMyAdmin han sido instalados y configurados correctamente."
+echo "Puedes acceder a PHPMyAdmin en http://<tu_ip_publica>/phpmyadmin/"
+echo "Recuerda que la contraseña de root de MariaDB es '$MARIADB_ROOT_PASSWORD'."
