@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# Cargar variables de entorno desde el archivo .env
-export $(grep -v '^#' .env | xargs)
+# Verificar si existe el archivo .env y si existe cargar las variables
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)
+else
+  echo "El archivo .env no se encuentra. Asegúrate de tenerlo con las variables necesarias."
+  exit 1
+fi
 
 # Instalación de Apache y PHP
 sudo apt update
