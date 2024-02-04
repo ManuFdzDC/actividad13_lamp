@@ -1,14 +1,5 @@
 #!/bin/bash
 
-# Verificar si existe el archivo .env y si no existe crearlo
-if [ ! -f .env ]; then
-    echo "El archivo .env no existe. Creando el archivo..."
-    echo "# Configuración de variables para LAMP y PHPMyAdmin" > .env
-    echo "MARIADB_ROOT_PASSWORD=alumno203" >> .env
-    echo "PHPMYADMIN_PASSWORD=alumno203" >> .env
-    chmod 600 .env
-fi
-
 # Cargar variables de entorno desde el archivo .env
 export $(grep -v '^#' .env | xargs)
 
